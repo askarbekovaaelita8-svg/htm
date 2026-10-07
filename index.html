@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Резюме — Аэлита Аскарбекова</title>
+  <style>
+    :root{--ink:#2f2926;--muted:#756861;--accent:#9b6f5d;--paper:#fffaf4;--line:#eadfd5}
+    *{box-sizing:border-box} body{margin:0;background:#f2ebe4;color:var(--ink);font:16px/1.6 Arial,sans-serif}
+    .page{max-width:1000px;margin:36px auto;padding:42px;background:var(--paper);box-shadow:0 16px 45px #5d463018}
+    header{display:flex;justify-content:space-between;gap:24px;border-bottom:1px solid var(--line);padding-bottom:25px}
+    h1{font:700 clamp(32px,6vw,58px)/1.05 Georgia,serif;margin:0 0 8px;color:var(--accent)}
+    h2{font:22px Georgia,serif;color:var(--accent);margin:30px 0 12px}.lead{font-size:20px;margin:0;color:var(--muted)}
+    .contact{text-align:right;color:var(--muted);min-width:210px}.contact a{color:inherit;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1.35fr .8fr;gap:42px}.item{border-left:3px solid var(--line);padding-left:16px;margin:15px 0 22px}.item h3{margin:0;color:var(--ink)}
+    .date{font-size:13px;color:var(--accent);font-weight:bold;letter-spacing:.06em;text-transform:uppercase}.tags{display:flex;flex-wrap:wrap;gap:8px}.tag{background:#f0e3d9;border-radius:99px;padding:5px 11px;font-size:14px}
+    ul{padding-left:20px;margin-top:7px}.note{background:#fbf1e8;padding:15px 17px;border-radius:10px}.footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+    @media(max-width:700px){.page{margin:0;padding:25px 20px}.grid{grid-template-columns:1fr;gap:0}header{display:block}.contact{text-align:left;margin-top:18px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header><div><h1>Аэлита<br>Аскарбекова</h1><p class="lead">Начинающий веб-разработчик</p></div><div class="contact">Кыргызстан<br><a href="mailto:askarbekovaaelita8@gmail.com">askarbekovaaelita8@gmail.com</a><br><a href="https://github.com/askarbekovaaelita8-svg/htm">GitHub ↗</a></div></header>
+    <div class="grid"><section>
+      <h2>О себе</h2><p>Создаю понятные и аккуратные веб-интерфейсы, люблю превращать учебные идеи в работающие интерактивные проекты. Развиваюсь в HTML, CSS, JavaScript и Java.</p>
+      <h2>Проекты</h2>
+      <article class="item"><div class="date">Учебный проект · 2026</div><h3>Железнодорожная развязка X</h3><p>Интерактивная визуализация железнодорожной сети: станции, маршруты поездов, управление скоростью и отрисовка схемы на Canvas.</p><ul><li>Адаптивная HTML-страница без внешних зависимостей.</li><li>CSS-интерфейс с понятной панелью управления.</li><li>Алгоритм поиска маршрута реализован в Java-версии проекта.</li></ul></article>
+      <h2>Цель</h2><div class="note">Ищу возможность развиваться в команде, работать над реальными веб-продуктами и постепенно углублять знания фронтенд-разработки.</div>
+    </section><aside>
+      <h2>Навыки</h2><div class="tags"><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JavaScript</span><span class="tag">Canvas</span><span class="tag">Java</span><span class="tag">Git</span><span class="tag">Адаптивная вёрстка</span></div>
+      <h2>Сильные стороны</h2><ul><li>Внимание к деталям</li><li>Самостоятельное обучение</li><li>Логическое мышление</li><li>Ответственный подход</li></ul>
+      <h2>Языки</h2><ul><li>Русский — свободно</li><li>Кыргызский — родной</li><li>Английский — изучаю</li></ul>
+    </aside></div>
+    <div class="footer">Однофайловая версия резюме · HTML + встроенный CSS · готова к публикации на GitHub Pages</div>
+  </main>
+</body></html>
