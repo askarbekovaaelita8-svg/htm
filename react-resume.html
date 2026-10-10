@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Резюме — Аэлита Аскарбекова</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root{--ink:#182235;--muted:#6b7280;--accent:#635bff;--soft:#eef0ff;--paper:#fff;--bg:#f5f7fb}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.app{max-width:1050px;margin:auto;padding:34px 20px}.hero{display:flex;justify-content:space-between;gap:30px;align-items:center;padding:42px;border-radius:24px;background:linear-gradient(135deg,#252b58,#635bff);color:#fff;box-shadow:0 18px 45px #2d326a30}.hero h1{margin:0;font-size:clamp(34px,7vw,62px);line-height:1.05}.hero p{margin:12px 0 0;color:#e4e6ff;font-size:20px}.avatar{display:grid;place-items:center;width:130px;height:130px;flex:none;border-radius:50%;background:#ffffff25;border:1px solid #ffffff55;font-size:52px}.contacts{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}.contacts a{padding:8px 13px;border-radius:99px;background:#ffffff1c;color:#fff;text-decoration:none}.content{display:grid;grid-template-columns:1.4fr .8fr;gap:22px;margin-top:22px}.card{padding:26px;border-radius:18px;background:var(--paper);box-shadow:0 10px 30px #26324a0d}.card h2{margin:0 0 16px;color:var(--accent);font-size:22px}.project{padding:16px 0;border-top:1px solid #e9ebf2}.project:first-of-type{padding-top:0;border-top:0}.project h3{margin:0 0 5px}.project p{margin:0;color:var(--muted)}.skills{display:flex;flex-wrap:wrap;gap:8px}.skill{padding:7px 11px;border-radius:8px;background:var(--soft);color:#4c46c7;font-size:14px;font-weight:600}.facts{display:grid;gap:12px;margin:0;padding:0;list-style:none}.facts li{padding-bottom:12px;border-bottom:1px solid #e9ebf2}.facts li:last-child{border-bottom:0;padding-bottom:0}.facts strong{display:block}.facts span{color:var(--muted);font-size:14px}.footer{text-align:center;margin:22px 0 0;color:var(--muted);font-size:14px}@media(max-width:700px){.hero{padding:28px;align-items:flex-start}.avatar{width:80px;height:80px;font-size:30px}.content{grid-template-columns:1fr}.hero p{font-size:17px}}
+  </style>
+</head>
+<body><div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function Header() {
+      return <header className="hero"><div><h1>Аэлита<br/>Аскарбекова</h1><p>Начинающий frontend-разработчик</p><nav className="contacts"><a href="mailto:askarbekovaaelita8@gmail.com">Email</a><a href="https://github.com/askarbekovaaelita8-svg/htm">GitHub</a></nav></div><div className="avatar">А</div></header>;
+    }
+    function About() { return <section className="card"><h2>О себе</h2><p>Создаю понятные и аккуратные веб-интерфейсы. Люблю превращать учебные идеи в работающие интерактивные проекты и развиваюсь в HTML, CSS, JavaScript, React и Java.</p><h2>Проекты</h2><article className="project"><h3>Доска объявлений</h3><p>Frontend с загрузкой списка объявлений через GET и отправкой новых объявлений через POST с изображением.</p></article><article className="project"><h3>Система заселения</h3><p>Проверка студента, корпуса и комнаты через три асинхронных запроса с использованием Promise.all.</p></article><article className="project"><h3>Todo List</h3><p>Минималистичный список задач с добавлением, удалением и отметкой выполненных дел.</p></article></section>; }
+    function Skills() { const skills=['HTML5','CSS3','JavaScript','React','REST API','Fetch','Git','Java','Адаптивная вёрстка']; return <section className="card"><h2>Навыки</h2><div className="skills">{skills.map(skill=><span className="skill" key={skill}>{skill}</span>)}</div><h2>Личные качества</h2><ul><li>Внимание к деталям</li><li>Самостоятельное обучение</li><li>Ответственность</li><li>Логическое мышление</li></ul></section>; }
+    function Facts() { return <section className="card"><h2>Кратко</h2><ul className="facts"><li><strong>Направление</strong><span>Frontend-разработка</span></li><li><strong>Языки</strong><span>Русский, кыргызский, английский</span></li><li><strong>Цель</strong><span>Развиваться в команде и создавать полезные продукты</span></li></ul></section>; }
+    function App() { const [year] = useState(new Date().getFullYear()); return <main className="app"><Header/><div className="content"><div><About/></div><div><Skills/><Facts/></div></div><p className="footer">Создано на React · {year}</p></main>; }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body></html>
