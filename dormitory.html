@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заселение в общежитие</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#687386;--primary:#4f46e5;--ok:#15803d;--ok-bg:#dcfce7;--bad:#b91c1c;--bad-bg:#fee2e2;--border:#dbe1ea}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#eef2ff,var(--bg));font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}.card{width:min(100%,560px);padding:32px;background:var(--card);border-radius:20px;box-shadow:0 18px 50px #24324a1a}h1{margin:0 0 8px;font-size:clamp(25px,5vw,36px)}.intro{margin:0 0 24px;color:var(--muted)}.form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:600}input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font:inherit;outline:none}input:focus{border-color:var(--primary);box-shadow:0 0 0 3px #4f46e51c}button{margin-top:4px;padding:13px;border:0;border-radius:10px;background:var(--primary);color:#fff;font:600 16px inherit;cursor:pointer}button:disabled{opacity:.65;cursor:wait}.result{display:none;margin-top:22px;padding:16px;border-radius:12px}.result.success{display:block;color:var(--ok);background:var(--ok-bg)}.result.error{display:block;color:var(--bad);background:var(--bad-bg)}.result h2{margin:0 0 7px;font-size:19px}.result p{margin:0}.details{margin:8px 0 0;padding-left:20px}.back{display:inline-block;margin-top:22px;color:var(--primary);text-decoration:none}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Заселение в общежитие</h1>
+    <p class="intro">Введите данные — система одновременно проверит студента, корпус и комнату.</p>
+    <form class="form" id="settlementForm">
+      <label for="studentId">ID студента<input id="studentId" type="number" min="1" required placeholder="Например, 12"></label>
+      <label for="buildingId">Номер корпуса<input id="buildingId" type="number" min="1" required placeholder="Например, 3"></label>
+      <label for="roomId">Номер комнаты<input id="roomId" type="number" min="1" required placeholder="Например, 204"></label>
+      <button id="submitButton" type="submit">Проверить возможность заселения</button>
+    </form>
+    <section id="result" class="result" aria-live="polite"></section>
+    <a class="back" href="./">← Вернуться к Todo List</a>
+  </main>
+  <script>
+    const API = 'https://inai-col1.fishrungames.com';
+    const form = document.querySelector('#settlementForm');
+    const result = document.querySelector('#result');
+    const submitButton = document.querySelector('#submitButton');
+
+    async function getJson(path, id) {
+      const response = await fetch(`${API}/${path}/${encodeURIComponent(id)}`);
+      if (!response.ok) throw new Error(`${path}: сервер вернул ${response.status}`);
+      return response.json();
+    }
+
+    // Поддерживаем наиболее распространённые варианты названий полей API.
+    function hasTrue(data, names) { return names.some(name => data?.[name] === true || data?.[name] === 1); }
+    function isNonresident(student) { return hasTrue(student, ['is_nonresident','nonresident','is_foreigner','foreigner','out_of_town','is_out_of_town']); }
+    function isStudentBuilding(building) { return hasTrue(building, ['for_students','is_for_students','student_building','is_student_building']); }
+    function isFreeRoom(room) { return hasTrue(room, ['is_free','free','available','is_available']); }
+
+    function showResult(ok, title, message, checks = []) {
+      result.className = `result ${ok ? 'success' : 'error'}`;
+      result.innerHTML = `<h2>${title}</h2><p>${message}</p>${checks.length ? `<ul class="details">${checks.map(item => `<li>${item}</li>`).join('')}</ul>` : ''}`;
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const studentId = document.querySelector('#studentId').value.trim();
+      const buildingId = document.querySelector('#buildingId').value.trim();
+      const roomId = document.querySelector('#roomId').value.trim();
+      submitButton.disabled = true;
+      submitButton.textContent = 'Проверяем...';
+      result.className = 'result';
+      try {
+        const [student, building, room] = await Promise.all([
+          getJson('students', studentId),
+          getJson('buildings', buildingId),
+          getJson('rooms', roomId)
+        ]);
+        const checks = [
+          ['Студент иногородний', isNonresident(student)],
+          ['Корпус предназначен для студентов', isStudentBuilding(building)],
+          ['Комната свободна', isFreeRoom(room)]
+        ];
+        const failed = checks.filter(([, passed]) => !passed).map(([name]) => name);
+        if (!failed.length) showResult(true, 'Все условия соблюдены', 'Студента можно заселить в выбранную комнату.');
+        else showResult(false, 'В заселении отказано', `Не выполнено условие: ${failed.join('; ')}.`, checks.map(([name, passed]) => `${passed ? '✓' : '✕'} ${name}`));
+      } catch (error) {
+        showResult(false, 'Не удалось выполнить проверку', `Проверьте ID и доступность сервера. ${error.message}`);
+      } finally { submitButton.disabled = false; submitButton.textContent = 'Проверить возможность заселения'; }
+    });
+  </script>
+</body>
+</html>
