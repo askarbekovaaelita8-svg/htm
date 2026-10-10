@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Доска объявлений</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#718096;--primary:#4f46e5;--border:#e2e8f0;--ok:#15803d;--bad:#b91c1c}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;background:linear-gradient(135deg,#eef2ff,var(--bg));font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}.page{width:min(100%,1100px);margin:auto}.top{margin-bottom:24px}.top h1{margin:0 0 6px;font-size:clamp(28px,5vw,42px)}.top p{margin:0;color:var(--muted)}.layout{display:grid;grid-template-columns:340px 1fr;gap:22px}.panel,.ad{background:var(--card);border-radius:16px;box-shadow:0 12px 35px #26324a12}.panel{padding:22px}.panel h2{margin:0 0 16px;font-size:21px}.form{display:grid;gap:13px}label{display:grid;gap:5px;font-weight:600}input,textarea{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;font:inherit;outline:none}textarea{resize:vertical;min-height:105px}input:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px #4f46e51c}button{border:0;border-radius:9px;padding:12px;background:var(--primary);color:#fff;font:600 15px inherit;cursor:pointer}button:disabled{opacity:.65;cursor:wait}.status{min-height:22px;margin:13px 0 0;font-size:14px}.success{color:var(--ok)}.error{color:var(--bad)}.ads-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.ads-head h2{margin:0;font-size:21px}.refresh{padding:8px 12px;background:#e0e7ff;color:#3730a3}.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px}.ad{overflow:hidden;border:1px solid var(--border)}.ad img{display:block;width:100%;height:155px;object-fit:cover;background:#eef2f7}.ad-body{padding:15px}.ad h3{margin:0 0 7px;font-size:18px}.ad p{margin:0 0 10px;color:var(--muted);white-space:pre-wrap}.price{font-weight:700;color:var(--primary)}.empty{padding:30px;text-align:center;color:var(--muted);background:#fff;border-radius:12px}.back{display:inline-block;margin-top:22px;color:var(--primary);text-decoration:none}
+    @media(max-width:760px){body{padding:18px}.layout{grid-template-columns:1fr}.panel{order:0}}
+  </style>
+</head>
+<body><main class="page">
+  <header class="top"><h1>Доска объявлений</h1><p>Просматривайте товары и публикуйте свои объявления.</p></header>
+  <div class="layout">
+    <section class="panel"><h2>Новое объявление</h2><form class="form" id="adForm">
+      <label>Название<input name="title" type="text" required maxlength="100" placeholder="Например: Ноутбук"></label>
+      <label>Описание<textarea name="description" required maxlength="1000" placeholder="Опишите товар"></textarea></label>
+      <label>Цена<input name="price" type="number" required min="0" step="0.01" placeholder="45000"></label>
+      <label>Изображение<input name="image" type="file" accept="image/*"></label>
+      <button id="submitButton" type="submit">Опубликовать</button><p class="status" id="formStatus" aria-live="polite"></p>
+    </form></section>
+    <section><div class="ads-head"><h2>Все объявления</h2><button class="refresh" id="refreshButton" type="button">Обновить</button></div><div class="list" id="adList"><p class="empty">Загрузка объявлений...</p></div></section>
+  </div><a class="back" href="./">← Вернуться к Todo List</a>
+</main>
+<script>
+  const API = 'https://inai-col1.fishrungames.com';
+  const list = document.querySelector('#adList');
+  const form = document.querySelector('#adForm');
+  const status = document.querySelector('#formStatus');
+  const submitButton = document.querySelector('#submitButton');
+
+  function imageUrl(path) { return path ? (path.startsWith('http') ? path : `${API}${path}`) : ''; }
+  function renderAds(items) {
+    if (!items.length) { list.innerHTML = '<p class="empty">Объявлений пока нет.</p>'; return; }
+    list.innerHTML = items.map(ad => `<article class="ad">${ad.image_url ? `<img src="${imageUrl(ad.image_url)}" alt="${escapeHtml(ad.title)}">` : ''}<div class="ad-body"><h3>${escapeHtml(ad.title)}</h3><p>${escapeHtml(ad.description)}</p><div class="price">${Number(ad.price).toLocaleString('ru-RU')} сом</div></div></article>`).join('');
+  }
+  function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[char])); }
+  async function loadAds() {
+    list.innerHTML = '<p class="empty">Загрузка объявлений...</p>';
+    try { const response = await fetch(`${API}/ads`); if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`); const data = await response.json(); renderAds(data.items || []); }
+    catch (error) { list.innerHTML = `<p class="empty">Не удалось загрузить объявления.<br>${escapeHtml(error.message)}</p>`; }
+  }
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); status.textContent = ''; status.className = 'status'; submitButton.disabled = true; submitButton.textContent = 'Публикуем...';
+    try { const response = await fetch(`${API}/ads`, { method:'POST', body:new FormData(form) }); if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`); form.reset(); status.textContent = 'Объявление опубликовано.'; status.className = 'status success'; await loadAds(); }
+    catch (error) { status.textContent = `Не удалось опубликовать: ${error.message}`; status.className = 'status error'; }
+    finally { submitButton.disabled = false; submitButton.textContent = 'Опубликовать'; }
+  });
+  document.querySelector('#refreshButton').addEventListener('click', loadAds);
+  loadAds();
+</script></body></html>
