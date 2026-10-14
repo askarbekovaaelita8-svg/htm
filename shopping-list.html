@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список покупок на React</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root{--ink:#182235;--muted:#718096;--primary:#4f46e5;--danger:#b91c1c;--bg:#f4f7fb;--card:#fff;--line:#e5e7eb}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#eef2ff,var(--bg));font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}.app{width:min(100%,620px);padding:32px;background:var(--card);border-radius:22px;box-shadow:0 20px 50px #26324a1a}h1{margin:0 0 7px;font-size:clamp(28px,6vw,40px);letter-spacing:-.04em}.subtitle{margin:0 0 24px;color:var(--muted)}.form{display:grid;grid-template-columns:1fr 150px auto;gap:10px}.form input{min-width:0;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;outline:none}.form input:focus{border-color:var(--primary);box-shadow:0 0 0 3px #4f46e51c}button{border:0;border-radius:10px;padding:0 16px;background:var(--primary);color:#fff;font:600 15px inherit;cursor:pointer}button:hover{filter:brightness(.95)}.message{min-height:23px;margin:12px 0 0;color:var(--danger);font-size:14px}.items{display:grid;gap:10px;margin:4px 0 20px;padding:0;list-style:none}.item{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 15px;border:1px solid var(--line);border-radius:12px;background:#fafbff}.item-info{min-width:0}.item-name{display:block;font-weight:650;overflow-wrap:anywhere}.item-price{color:var(--muted);font-size:14px}.remove{padding:8px 11px;background:#fee2e2;color:var(--danger);font-size:13px}.total{display:flex;justify-content:space-between;align-items:center;padding-top:19px;border-top:1px solid var(--line);font-size:20px;font-weight:700}.total strong{color:var(--primary)}.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed #cbd5e1;border-radius:12px}@media(max-width:550px){.app{padding:24px 18px}.form{grid-template-columns:1fr 1fr}.form button{grid-column:1/-1;min-height:45px}.item{align-items:flex-start}.total{font-size:18px}}
+  </style>
+</head>
+<body><div id="root"></div>
+<script type="text/babel">
+  const {useState} = React;
+
+  // Отдельный компонент элемента списка получает товар и функцию удаления через props.
+  function ShoppingItem({item, onRemove}) {
+    return <li className="item"><div className="item-info"><span className="item-name">{item.name}</span><span className="item-price">{item.price.toLocaleString('ru-RU')} сом</span></div><button className="remove" onClick={() => onRemove(item.id)}>Удалить</button></li>;
+  }
+
+  function App() {
+    const [items, setItems] = useState([]);
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [message, setMessage] = useState('');
+    const total = items.reduce((sum, item) => sum + item.price, 0);
+
+    function addItem(event) {
+      event.preventDefault();
+      const cleanName = name.trim();
+      const numericPrice = Number(price);
+      if (!cleanName || !price || !Number.isFinite(numericPrice) || numericPrice < 0) { setMessage('Введите название и корректную цену.'); return; }
+      setItems([...items, {id: Date.now(), name: cleanName, price: numericPrice}]);
+      setName(''); setPrice(''); setMessage('');
+    }
+    function removeItem(id) { setItems(items.filter(item => item.id !== id)); }
+
+    return <main className="app"><h1>Список покупок</h1><p className="subtitle">Добавляйте товары и следите за общей стоимостью</p>
+      <form className="form" onSubmit={addItem}><input value={name} onChange={event => setName(event.target.value)} placeholder="Название товара" aria-label="Название товара"/><input value={price} onChange={event => setPrice(event.target.value)} type="number" min="0" step="0.01" placeholder="Цена" aria-label="Цена"/><button type="submit">Добавить</button></form>
+      <p className="message" aria-live="polite">{message}</p>
+      {items.length ? <ul className="items">{items.map(item => <ShoppingItem key={item.id} item={item} onRemove={removeItem}/>)}</ul> : <p className="empty">Список покупок пока пуст</p>}
+      <div className="total"><span>Общая стоимость:</span><strong>{total.toLocaleString('ru-RU',{minimumFractionDigits:2})} сом</strong></div>
+    </main>;
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>
