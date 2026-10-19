@@ -36,9 +36,9 @@
 
     // Поддерживаем наиболее распространённые варианты названий полей API.
     function hasTrue(data, names) { return names.some(name => data?.[name] === true || data?.[name] === 1); }
-    function isNonresident(student) { return hasTrue(student, ['is_nonresident','nonresident','is_foreigner','foreigner','out_of_town','is_out_of_town']); }
-    function isStudentBuilding(building) { return hasTrue(building, ['for_students','is_for_students','student_building','is_student_building']); }
-    function isFreeRoom(room) { return hasTrue(room, ['is_free','free','available','is_available']); }
+    function isNonresident(student) { return student?.resident === false || hasTrue(student, ['is_nonresident','nonresident','is_foreigner','foreigner','out_of_town','is_out_of_town']); }
+    function isStudentBuilding(building) { return building?.forStudents === true || hasTrue(building, ['for_students','is_for_students','student_building','is_student_building']); }
+    function isFreeRoom(room) { return room?.available === true || hasTrue(room, ['is_free','free','is_available']); }
 
     function showResult(ok, title, message, checks = []) {
       result.className = `result ${ok ? 'success' : 'error'}`;
